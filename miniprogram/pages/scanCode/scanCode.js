@@ -77,6 +77,9 @@ Page({
       scanType: ['barCode'],
       success:res=> {
         
+        wx.showLoading({
+          'title': '正在添加'
+        })
         // 获取图书详情
         wx.cloud.callFunction({
           // 要调用的云函数名称
@@ -93,7 +96,13 @@ Page({
               // data 字段表示需新增的 JSON 数据
               data: bookinfo,
               success: function (res) {
-                console.log(res)
+                wx.hideLoading()
+                if (res._id) {
+                  wx.showToast({
+                    'title':'添加成功',
+                    'icon':'success'
+                  })
+                }
               }
             })
             // output: res.result === 3
@@ -105,7 +114,7 @@ Page({
         })
       },
       fail:err => {
-        console.log(res)
+        console.log(err)
       }
 
     })

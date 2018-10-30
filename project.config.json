@@ -38,9 +38,10 @@
 					"query": ""
 				},
 				{
-					"id": -1,
+					"id": 1,
 					"name": "scanCode",
-					"pathName": "pages/scanCode/scanCode"
+					"pathName": "pages/scanCode/scanCode",
+					"query": ""
 				}
 			]
 		}

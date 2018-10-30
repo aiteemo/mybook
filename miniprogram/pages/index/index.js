@@ -1,41 +1,100 @@
 //index.js
-const app = getApp()
+const app    = getApp()
+const db     = wx.cloud.database()
+const mybook = db.collection('mybook')
 
 Page({
   data: {
-    avatarUrl: './user-unlogin.png',
-    userInfo: {},
-    logged: false,
-    takeSession: false,
-    requestResult: ''
+      avatarUrl: './user-unlogin.png',
+      userInfo: {},
+      logged: false,
+      takeSession: false,
+      requestResult: '',
+      myBookList : [],
+      nowPage : 1,
+      pageLimit : 20,
   },
 
   onLoad: function() {
-    if (!wx.cloud) {
-      wx.redirectTo({
-        url: '../chooseLib/chooseLib',
-      })
-      return
-    }
 
-    // 获取用户信息
-    wx.getSetting({
-      success: res => {
-        if (res.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称，不会弹框
-          wx.getUserInfo({
-            success: res => {
-              this.setData({
-                avatarUrl: res.userInfo.avatarUrl,
-                userInfo: res.userInfo
-              })
-            }
+      var _this = this;
+
+      if (!wx.cloud) {
+          wx.redirectTo({
+            url: '../chooseLib/chooseLib',
           })
-        }
+          return
       }
-    })
+
+      // 获取用户信息
+      wx.getSetting({
+          success: res => {
+              if (res.authSetting['scope.userInfo']) {
+                  // 已经授权，可以直接调用 getUserInfo 获取头像昵称，不会弹框
+                  wx.getUserInfo({
+                      success: res => {
+                          this.setData({
+                              avatarUrl: res.userInfo.avatarUrl,
+                              userInfo: res.userInfo
+                          })
+                      }
+                  })
+              }
+          }
+      })
+
+      // 获取图书列表
+      db.collection('mybook').limit(this.data.pageLimit).orderBy('_id','desc').get({
+          success:res=> {
+              // res.data 包含该记录的数据
+              if(res.data) {
+                  this.setData({
+                      myBookList : res.data,
+                      nowPage : 1,
+                  })
+              }
+          }
+      });
   },
 
+  onPullDownRefresh:function() {
+
+      console.log(1)
+      // 获取图书列表
+      db.collection('mybook').limit(this.data.pageLimit).orderBy('_id','desc').get({
+          success:res=> {
+              // res.data 包含该记录的数据
+              if(res.data) {
+                  this.setData({
+                      myBookList : res.data,
+                      nowPage : 1,
+                  })
+              }
+          }
+      });
+      wx.stopPullDownRefresh()
+  },
+
+  onReachBottom:function(){
+
+      const skip = (this.data.nowPage) * this.data.pageLimit;
+
+      // 加载图书列表
+      db.collection('mybook').skip(skip).limit(this.data.pageLimit).orderBy('_id','desc').get({
+              success:res=> {
+                  // res.data 包含该记录的数据
+                  if(res.data) {
+                      const tmp_data    = this.data.myBookList.concat(res.data)
+                      this.data.nowPage = this.data.nowPage+1;
+                      this.setData({
+                          myBookList : tmp_data
+                      })
+                  } else {
+                    console.log(res)
+                  }
+              }
+      });
+  },
   onGetUserInfo: function(e) {
     if (!this.logged && e.detail.userInfo) {
       this.setData({
