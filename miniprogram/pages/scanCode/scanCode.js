@@ -7,7 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+      isFirstShow : 1,
   },
 
   /**
@@ -66,6 +66,14 @@ Page({
 
   },
 
+    onShow:function() {
+        if(this.data.isFirstShow==1) {
+            this.data.isFirstShow=2
+          // 刷新图书列表
+          this.scanCode();
+        }
+    },
+
   /**
    * 扫码添加书籍
    */
@@ -89,7 +97,17 @@ Page({
             isbn:res.result
           },
           success: res => {
-            var bookinfo = JSON.parse(res.result)
+              var bookinfo = JSON.parse(res.result)
+              //console.log(bookinfo);return;
+              if(!bookinfo || !bookinfo.id) {
+                  wx.hideLoading();
+                  wx.showToast({
+                      'title':'哎呀我不认识噢',
+                      'icon':'none'
+                  })
+                  return;
+              }
+              bookinfo.add_time = db.serverDate();
             
             //插入图书
             db.collection('mybook').add({

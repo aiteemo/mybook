@@ -1,0 +1,34 @@
+<view class="wrapper">
+    <van-panel wx:if="{{is_loading}}">
+        <view slot="header">
+            <view class="book-info">
+                <image class="book-cover" src="{{bookDetail.images.medium}}" mode="aspectFit"/>
+                <view class="book-info-content">
+                    <view class="title">{{bookDetail.title}}</view>
+                    <view class="author">作者：{{bookDetail.author[0]}}</view>
+                    <view class="publish">出版社：{{bookDetail.publisher}}</view>
+                    <view class="publish">出版时间：{{bookDetail.pubdate}}</view>
+                    <view class="price">价格：{{bookDetail.price}}</view>
+                    <view class="ISBN">ISBN：{{bookDetail.isbn13}}</view>
+                </view>
+            </view>
+            <view class="huanhang">
+                <van-row  wx:for="{{bookDetail.tags}}" wx:for-item="tags_item" wx:key="unique">
+                    <van-tag color="#f2826a" plain custom-class="kongge">{{tags_item.title}}</van-tag>
+                </van-row>
+            </view>
+        </view>
+        <view class="book-content">
+            <view class="book-content-title">作者简介</view>
+            <view class="book-content-wrap">{{bookDetail.author_intro}}</view>
+        </view>
+        <view class="book-content">
+            <view class="book-content-title">内容简介</view>
+            <view class="book-content-wrap">{{bookDetail.summary}}</view>
+            <view class="book-content-wrap">{{bookDetail.catalog}}</view>
+        </view>
+    </van-panel>
+    <view class="loading-wrap" wx:else="{{!is_loading}}">
+        <van-loading color="#17abe3"/>
+    </view>
+</view>

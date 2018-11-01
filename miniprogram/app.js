@@ -7,6 +7,7 @@ App({
     } else {
       wx.cloud.init({
         env: 'teemo-84b9c0',
+        //env: 'master-84b9c0',
         traceUser: true,
       })
     }

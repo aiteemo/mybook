@@ -1,9 +1,10 @@
 //index.js
-const app    = getApp()
-const db     = wx.cloud.database()
-const mybook = db.collection('mybook')
-
+const app    = getApp();
+const db     = wx.cloud.database();
+const mybook = db.collection('mybook');
+import Dialog from '../../vant/dialog/dialog';
 Page({
+
   data: {
       avatarUrl: './user-unlogin.png',
       userInfo: {},
@@ -12,7 +13,8 @@ Page({
       requestResult: '',
       myBookList : [],
       nowPage : 1,
-      pageLimit : 20,
+      pageLimit : 6,
+      is_loading : false,
   },
 
   onLoad: function() {
@@ -44,53 +46,81 @@ Page({
       })
 
       // 获取图书列表
-      db.collection('mybook').limit(this.data.pageLimit).orderBy('_id','desc').get({
+      db.collection('mybook').field({
+          title: true,
+          tags: true,
+          price: true,
+          author: true,
+          images: true
+      }).limit(this.data.pageLimit).orderBy('_id','desc').get({
+
           success:res=> {
+              var nowPage    = 0;
+              var myBookList = [];
               // res.data 包含该记录的数据
-              if(res.data) {
-                  this.setData({
-                      myBookList : res.data,
-                      nowPage : 1,
-                  })
-              }
+              if(res.data) myBookList = res.data
+              this.setData({
+                  is_loading : true,
+                  myBookList : myBookList,
+                  nowPage    : nowPage,
+              });
           }
       });
   },
 
-  onPullDownRefresh:function() {
+    // 下拉刷新
+    onPullDownRefresh:function() {
+        // 刷新图书列表
+        this.refashBookList();
+    },
+    onShow:function() {
+        // 刷新图书列表
+        this.refashBookList();
+    },
 
-      console.log(1)
-      // 获取图书列表
-      db.collection('mybook').limit(this.data.pageLimit).orderBy('_id','desc').get({
-          success:res=> {
-              // res.data 包含该记录的数据
-              if(res.data) {
-                  this.setData({
-                      myBookList : res.data,
-                      nowPage : 1,
-                  })
-              }
-          }
-      });
-      wx.stopPullDownRefresh()
-  },
+    refashBookList:function() {
+        // 刷新图书列表
+        db.collection('mybook').field({
+            title: true,
+            tags: true,
+            price: true,
+            author: true,
+            images: true
+        }).limit(this.data.pageLimit).orderBy('_id','desc').get({
+            success:res=> {
+                var nowPage    = 0;
+                var myBookList = [];
+                // res.data 包含该记录的数据
+                if(res.data) myBookList = res.data
+                this.setData({
+                    is_loading : true,
+                    myBookList : myBookList,
+                    nowPage    : nowPage,
+                });
+            }
+        });
+        wx.stopPullDownRefresh()
+    },
 
   onReachBottom:function(){
 
-      const skip = (this.data.nowPage) * this.data.pageLimit;
+      const skip = (this.data.nowPage+1) * this.data.pageLimit;
 
       // 加载图书列表
       db.collection('mybook').skip(skip).limit(this.data.pageLimit).orderBy('_id','desc').get({
               success:res=> {
                   // res.data 包含该记录的数据
-                  if(res.data) {
+                  if(res.data.length > 0) {
                       const tmp_data    = this.data.myBookList.concat(res.data)
                       this.data.nowPage = this.data.nowPage+1;
                       this.setData({
                           myBookList : tmp_data
                       })
                   } else {
-                    console.log(res)
+                      wx.showToast({
+                          'title':'已经暖到底啦！',
+                          'icon':'success'
+                      })
                   }
               }
       });
@@ -176,4 +206,39 @@ Page({
     })
   },
 
+    // 删除图书
+    deleteBook:function(event) {
+
+        var myBookList  =   this.data.myBookList;
+        var _this       =   this;
+
+        var book_id     =   event.currentTarget.dataset.id;
+        var book_index  =   event.currentTarget.dataset.index;
+
+        Dialog.confirm({
+            title: '移除图书',
+            message: '您确认要移除这本图书吗？'
+        }).then(() => {
+            // on confirm
+            console.log(book_id)
+            console.log(book_index)
+            db.collection('mybook').doc(book_id).remove()
+                .then(function (res) {
+                    if(res.stats.removed) {
+                        myBookList.splice(book_index,1)
+                        _this.setData({
+                            myBookList : myBookList
+                        });
+                        wx.showToast({
+                            'title':'移除成功',
+                            'icon':'success'
+                        })
+                    }
+                })
+                .catch(console.error)
+        }).catch(() => {
+            // on cancel
+            console.log("cancel")
+        });
+    }
 })

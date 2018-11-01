@@ -1,20 +1,29 @@
 <!--index.wxml-->
-<text>我的书屋</text>
-<view wx:if="{{myBookList}}">
-    <view wx:for="{{myBookList}}" wx:key="{{item.id}}">
-        <van-card
-          num="2"
-          tag="标签"
-          price="{{item.price}}"
-          desc="{{item.author}}"
-          title="{{item.title}}"
-          thumb="{{item.image}}"
+<van-notice-bar
+  left-icon="../../images/guangbo.png"
+  text="其实不读书也没有什么坏处，只是太过沉溺于现实世界，容易让人狗苟蝇营。比如，你可以通过读一本传记，窥见别人的人生。你可以读一本心理学的书，洞悉自我的处境。你可以读一本历史的书，看刀光剑影，明白再辉煌的生命也会尘埃落定。读书，让你在历史、未来、现实、空虚中来回穿梭，然后发现自己生活的更多可能。读书增加生命层次性。毕竟生命只有一次，但如果读书，就可以经历不同的生命，也就是你仅仅活了一辈子，但却跟着作者活了很多生。生命的层次越多，生命就越丰富，幸福感就越容易产生。"
+/>
+<view wx:if="{{myBookList.length > 0}}">
+    <view wx:for="{{myBookList}}" wx:key="unique">
+        <navigator
+            url="/pages/bookDetail/bookDetail?id={{item._id}}"
+            hover-class="navigator-hover"
         >
-          <view slot="footer">
-            <van-button size="mini">按钮</van-button>
-            <van-button size="mini">按钮</van-button>
-          </view>
-        </van-card>
+            <van-card
+              num=""
+              tag="{{item.tags[0].name}}"
+              price="{{item.price}}"
+              desc="{{item.author}}"
+              title="{{item.title}}"
+              thumb="{{item.image}}"
+            >
+
+            <view slot="footer">
+            <van-button round size="mini" data-id="{{item._id}}" data-index="{{index}}" type="primary" capture-catch:touchstart="deleteBook">移除</van-button>
+            </view>
+            </van-card>
+        </navigator>
     </view>
 </view>
-<view wx:else> 您还未添加图书，快去扫描添加吧 </view>
+<view wx:elif="{{is_loading == true}}"  style="text-align: center"> 您还未添加图书，快去扫描添加吧 </view>
+<van-dialog id="van-dialog" />
