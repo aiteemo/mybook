@@ -15,7 +15,7 @@
               price="{{item.price}}"
               desc="{{item.author}}"
               title="{{item.title}}"
-              thumb="{{item.image}}"
+              thumb="{{item.images.medium}}"
             >
 
             <view slot="footer">
@@ -27,3 +27,15 @@
 </view>
 <view wx:elif="{{is_loading == true}}"  style="text-align: center"> 您还未添加图书，快去扫描添加吧 </view>
 <van-dialog id="van-dialog" />
+
+<van-dialog
+        async-close
+        show="{{ auth_show }}"
+        show-cancel-button
+        confirm-button-open-type="getUserInfo"
+        bind:close="authOnClose"
+        bind:getuserinfo="getUserInfo"
+        title="授权提示"
+        message=" "
+>
+</van-dialog>

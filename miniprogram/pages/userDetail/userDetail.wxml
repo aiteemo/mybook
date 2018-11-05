@@ -1,0 +1,32 @@
+<view class="wrapper">
+    <van-panel >
+        <view slot="header">
+            <view class="book-info">
+                <image class="book-cover" src="{{avatarUrl}}" mode="aspectFit"/>
+                <view class="book-info-content">
+                    <view class="title">{{userInfo.nickName}}</view>
+                    <view class="address">{{userInfo.country}}.{{userInfo.province}}.{{userInfo.city}}</view>
+                </view>
+            </view>
+            <view class="huanhang">
+                <van-row  wx:for="{{bookDetail.tags}}" wx:for-item="tags_item" wx:key="unique">
+                    <van-tag color="#f2826a" plain custom-class="kongge">{{tags_item.title}}</van-tag>
+                </van-row>
+            </view>
+        </view>
+        <van-cell-group>
+            <van-cell title="公告" value="编辑" label="其实不读书也没有什么坏处，只是太过沉溺于现实世界，容易让人狗苟蝇营。比如，你可以通过读一本传记，窥见别人的人生。你可以读一本心理学的书，洞悉自我的处境。你可以读一本历史的书，看刀光剑影，明白再辉煌的生命也会尘埃落定。读书，让你在历史、未来、现实、空虚中来回穿梭，然后发现自己生活的更多可能。读书增加生命层次性。毕竟生命只有一次，但如果读书，就可以经历不同的生命，也就是你仅仅活了一辈子，但却跟着作者活了很多生。生命的层次越多，生命就越丰富，幸福感就越容易产生。" border="{{ false }}" />
+        </van-cell-group>
+    </van-panel>
+</view>
+<van-dialog
+        async-close
+        show="{{ auth_show }}"
+        show-cancel-button
+        confirm-button-open-type="getUserInfo"
+        bind:close="authOnClose"
+        bind:getuserinfo="getUserInfo"
+        title="授权提示"
+        message=" "
+>
+</van-dialog>

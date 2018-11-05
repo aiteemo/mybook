@@ -29,7 +29,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 2,
+			"current": 3,
 			"list": [
 				{
 					"id": -1,
@@ -48,6 +48,11 @@
 					"name": "bookDetail",
 					"pathName": "pages/bookDetail/bookDetail",
 					"query": "id=W9qhyHhEiJmgI8VL"
+				},
+				{
+					"id": -1,
+					"name": "userDetail",
+					"pathName": "pages/userDetail/userDetail"
 				}
 			]
 		}

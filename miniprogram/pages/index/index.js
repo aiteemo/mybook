@@ -6,7 +6,7 @@ import Dialog from '../../vant/dialog/dialog';
 Page({
 
   data: {
-      avatarUrl: './user-unlogin.png',
+      avatarUrl: '/images/user-unlogin.png',
       userInfo: {},
       logged: false,
       takeSession: false,
@@ -15,6 +15,7 @@ Page({
       nowPage : 1,
       pageLimit : 6,
       is_loading : false,
+      auth_show : false,
   },
 
   onLoad: function() {
@@ -35,24 +36,32 @@ Page({
                   // 已经授权，可以直接调用 getUserInfo 获取头像昵称，不会弹框
                   wx.getUserInfo({
                       success: res => {
+                          console.log(res);
                           this.setData({
                               avatarUrl: res.userInfo.avatarUrl,
                               userInfo: res.userInfo
                           })
+                      },
+                      error:res=> {
+                          console.log(res);
                       }
                   })
+              } else {
+                    this.setData({
+                        auth_show : true
+                    })
               }
           }
       })
 
       // 获取图书列表
-      db.collection('mybook').field({
+      db.collection('mybook').limit(this.data.pageLimit).orderBy('_id','desc').field({
           title: true,
           tags: true,
           price: true,
           author: true,
           images: true
-      }).limit(this.data.pageLimit).orderBy('_id','desc').get({
+      }).get({
 
           success:res=> {
               var nowPage    = 0;
@@ -80,13 +89,13 @@ Page({
 
     refashBookList:function() {
         // 刷新图书列表
-        db.collection('mybook').field({
+        db.collection('mybook').limit(this.data.pageLimit).orderBy('_id','desc').field({
             title: true,
             tags: true,
             price: true,
             author: true,
             images: true
-        }).limit(this.data.pageLimit).orderBy('_id','desc').get({
+        }).get({
             success:res=> {
                 var nowPage    = 0;
                 var myBookList = [];
@@ -107,7 +116,13 @@ Page({
       const skip = (this.data.nowPage+1) * this.data.pageLimit;
 
       // 加载图书列表
-      db.collection('mybook').skip(skip).limit(this.data.pageLimit).orderBy('_id','desc').get({
+      db.collection('mybook').skip(skip).limit(this.data.pageLimit).orderBy('_id','desc').field({
+          title: true,
+          tags: true,
+          price: true,
+          author: true,
+          images: true
+      }).get({
               success:res=> {
                   // res.data 包含该记录的数据
                   if(res.data.length > 0) {
@@ -220,8 +235,6 @@ Page({
             message: '您确认要移除这本图书吗？'
         }).then(() => {
             // on confirm
-            console.log(book_id)
-            console.log(book_index)
             db.collection('mybook').doc(book_id).remove()
                 .then(function (res) {
                     if(res.stats.removed) {
@@ -240,5 +253,5 @@ Page({
             // on cancel
             console.log("cancel")
         });
-    }
+    },
 })

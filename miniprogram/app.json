@@ -2,7 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/scanCode/scanCode",
-    "pages/bookDetail/bookDetail"
+    "pages/bookDetail/bookDetail",
+    "pages/userDetail/userDetail"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
@@ -23,6 +24,11 @@
       "text": "扫ISBN码加书",
       "selectedIconPath":"images/saoma.png",
       "iconPath":"images/saomaUnChecked.png"
+    },{
+      "pagePath": "pages/userDetail/userDetail",
+      "text": "个人中心",
+      "selectedIconPath":"images/gerenzhongxin.png",
+      "iconPath":"images/gerenzhongxinUnChecked.png"
     }]
   }
 }

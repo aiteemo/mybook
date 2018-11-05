@@ -62,6 +62,7 @@ Page({
                 var bookDetail = [];
                 // res.data 包含该记录的数据
                 if(res.data) bookDetail = res.data
+                console.log(res.data.images.medium)
                 this.setData({
                     is_loading : true,
                     bookDetail : bookDetail
